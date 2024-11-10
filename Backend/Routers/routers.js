@@ -4,7 +4,7 @@ import multerConfig from '../MiddleWares/MulterMiddleware.js';  // Add .js exten
 import { addNewVehicle, editVehicleDetails, getAllVehicles } from '../Controllers/VehicleController.js';  // Add .js extension
 import { addNewDriver, editDriverDetails, getAllDriverDetails } from '../Controllers/DriverController.js';  // Add .js extension
 import { addNewConductor, editConductorDetails, getAllConductorDetails } from '../Controllers/ConductorController.js';  // Add .js extension
-import { addNewTrip, editTripDetails, editTripDetailsNew, getAllTripDetails } from '../Controllers/TripController.js';  // Add .js extension
+import { addNewTrip, editTripDetails, getAllTripDetails } from '../Controllers/TripController.js';  // Add .js extension
 import { getAllLedgerData, newLedgerData } from '../Controllers/LedgerController.js';  // Add .js extension
 
 // Initialize router
@@ -48,9 +48,6 @@ router.post('/addnewTrip/:vehicle_id/:driver_id/:conductor_id',addNewTrip);
 router.get('/getAllTripDetails',getAllTripDetails);
 // Edit Trip Details by trip_id
 router.put('/editTripDetails/:trip_id/:vehicle_id/:driver_id/:conductor_id',editTripDetails);
-// New Edit Trip Details
-router.put('/editTripDetailsnew/:trip_id/:vehicle_id/:driver_id/:conductor_id',editTripDetailsNew);
-
 
 
 // <<<<<<<...........LedgerRouter.......>>>>>>>>

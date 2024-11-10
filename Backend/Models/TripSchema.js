@@ -31,7 +31,7 @@ const tripSchema = new mongoose.Schema({
         },
         address: {
             type: String,
-            // required: true
+            required: true
         },
         lat: {
             type: Number
@@ -47,7 +47,7 @@ const tripSchema = new mongoose.Schema({
         },
         address: {
             type: String,
-            // required: true
+            required: true
         },
         lat: {
             type: Number
@@ -97,21 +97,6 @@ const tripSchema = new mongoose.Schema({
     updated_at: {
         type: Date,
         default: Date.now
-    },
-    trip_id: {
-        type:String,
-        required:true,
-        unique:true
-    },
-    trip_type: {
-        type: String,
-        enum: ["outbound", "return"]
-    },
-    fuelCost:{
-        type:Number
-    },
-    collection_amount:{
-        type:Number
     }
 });
 

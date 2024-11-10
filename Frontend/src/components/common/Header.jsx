@@ -28,7 +28,7 @@ function Header() {
     
   return (
     <>
-     <Navbar  collapseOnSelect expand="md" className="m-0 p-0 " style={{background:'#DB2C07',zIndex:'5',position:"sticky",top:"0px"}}>
+     <Navbar  collapseOnSelect expand="md" className="m-0 p-0 " style={{background:'#DB2C07',zIndex:'5'}}>
     
     <Navbar.Brand className='w-100 d-flex px-3' href="#home">
       <img

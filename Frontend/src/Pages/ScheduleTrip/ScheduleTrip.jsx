@@ -1,136 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCog, faTrash, faCalendar, faBus, faClock, faUser, faEllipsisV,
-  faCircleCheck
+  faCog, faTrash, faCalendar, faBus, faClock, faUser, faEllipsisV
 } from '@fortawesome/free-solid-svg-icons';
 import Header from '../../components/common/Header';
 import { useNavigate } from 'react-router-dom';
-import { getAllTripApi, getAllVehicles, getDriversListApi, updateTripApiNew } from '../../services/allAPI';
 
 export default function ScheduleTrip() {
+  // Initial trip data
+  const tripData = [
+    { id: '#786473', vehicle: 'RT 2237', driver: 'John Doe', startDate: '2020-01-01T17:00', endDate: '2020-01-02T18:30', duration: '1d 1h 30 min' },
+    { id: '#786474', vehicle: 'RT 2238', driver: 'Jane Doe', startDate: '2020-02-01T12:00', endDate: '2020-02-02T14:30', duration: '1d 2h 30 min' },
+    { id: '#786475', vehicle: 'RT 2239', driver: 'John Smith', startDate: '2020-03-01T08:00', endDate: '2020-03-02T10:00', duration: '1d 2h' },
+    // Add more data as needed
+  ];
 
-  const [trips,setTrips]=useState([])
-  const [date,setDate]=useState("")
-  const [vehicleSearch,setVehicleSearch]=useState("")
-  const [vehicles,setVehicles]=useState([])
-  const [drivers,setDrivers]=useState([])
-  const [modifiedTrips,setModifiedTrips]=useState([])
-
-
-  // get all trips
-  const getTrips = async () => {
-    try{
-      const result = await getAllTripApi()
-      if(result.status==200){
-        setTrips(result.data)
-      }else{
-        alert("Failed to fetch Trips data")
-      }
-    }catch(err){
-      alert(`Failed to load trips ${err}`)
-    }
-  }
-
-  // get drivers list
-  const getAllDriversList = async () =>{
-    try{
-      const result = await getDriversListApi()
-      if(result.status==200){
-        setDrivers(result.data)        
-      }else{
-        alert("Failed to load Drivers Details")
-      }
-    }catch(err){
-      alert(`Failed to load Drivers Details ${err}`)
-    }
-  }
-
-    // get all buses
-    const getAllBuses = async()=>{
-      try{
-        const result = await getAllVehicles()
-        if(result.status==200){
-          setVehicles(result.data)
-        }else{
-          alert("Failed to load Bus Details")
-        }
-      }catch(err){
-        alert(`Failed to load Bus Details ${err}`)
-      }
-    }
-    
-  // api call
-  useEffect(()=>{
-    getTrips()
-    getAllDriversList()
-    getAllBuses()
-  },[])
-
-
-  // mdofied trip data
-  useEffect(()=>{
-    if(trips.length>0 && vehicles.length>0 && drivers.length>0){
-      let arr = trips.map(item=>
-      ({...item,vehicleNumber:vehicles.find(item2=>item2._id==item.vehicle_id)?.number,driverName:drivers.find(item2=>item2._id==item.driver_id)?.first_name+" "+drivers.find(item2=>item2._id==item.driver_id)?.last_name})
-      )
-      setModifiedTrips(arr)      
-    }
-  },[trips,vehicles,drivers])
-  
-
-   // formats time =>recieve time from time picker and returns formatted time
-  const formatTime=(timeInput) =>{
-    if(timeInput){
-      const date = new Date(`1970-01-01T${timeInput}:00`)
-      const options = { hour: 'numeric', minute: '2-digit', hour12: true };
-      return date.toLocaleTimeString('en-US', options);
-    }else{
-      return ""
-    }
-  }
-
-  // calculate trip duration
-  const tripDuration=(start_date,start_time,end_date,end_time)=>{    
-    if(!start_date || !start_time || !end_date || !end_time){
-      return ""
-    }else{
-      const startDateTime = new Date(`${start_date.split("T")[0]}T${start_time}`)
-      const endDateTime = new Date(`${end_date.split("T")[0]}T${end_time}`)
-      const diffInMs = endDateTime - startDateTime
-
-      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-      const days = Math.floor(diffInMinutes / (24 * 60));
-      const hours = Math.floor((diffInMinutes % (24 * 60)) / 60);
-      const minutes = diffInMinutes % 60;
-
-    return days==0?hours==0?`${minutes}min`:`${hours}h ${minutes}min`:`${days}d ${hours}h ${minutes}min`
-    }
-  }
-  
-  
-
+  const [vehicleFilter, setVehicleFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
   const navigate = useNavigate();
   const handleScheduleButton = () => {
     navigate("/add-trip")
   }
-
-  const handleLive = async (id) => {    
-    const trip = trips.find(item=>item._id==id)
-    
-    if(trip.status != "live"){
-      let obj = {...trip,status:"live"}
-      console.log(obj);
-      const result = await updateTripApiNew(obj._id,obj.vehicle_id,obj.driver_id,obj.conductor_id,obj)
-      getTrips()         
-    }
-  }
-
-
-  // console.log(modifiedTrips);
-  
-  
+  // Filtered trips based on vehicle number and date
+  const filteredTrips = tripData.filter(trip => {
+    const matchesVehicle = trip.vehicle.toLowerCase().includes(vehicleFilter.toLowerCase());
+    const matchesDate = dateFilter ? trip.startDate.startsWith(dateFilter) : true;
+    return matchesVehicle && matchesDate;
+  });
 
   return (
     <div>
@@ -156,19 +53,20 @@ export default function ScheduleTrip() {
                 <Form.Control
                   type="text"
                   placeholder="Filter by Vehicle"
-                  value={vehicleSearch}
-                  onChange={(e) => setVehicleSearch(e.target.value)}
+                  value={vehicleFilter}
+                  onChange={(e) => setVehicleFilter(e.target.value)}
                 />
               </Col>
               <Col md={4}>
                 <Form.Control
                   type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
+                  placeholder="Enter Date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
                 />
               </Col>
               <Col md={4} className="text-end">
-                <Button variant="link" className="text-muted" onClick={() => { setDate(''); setVehicleSearch(''); }}>CLEAR</Button>
+                <Button variant="link" className="text-muted" onClick={() => { setVehicleFilter(''); setDateFilter(''); }}>CLEAR</Button>
               </Col>
             </Row>
 
@@ -177,21 +75,13 @@ export default function ScheduleTrip() {
             {/* Toolbar with count of items */}
             <Row className="align-items-center mb-3">
               <Col xs="auto">
-                {/* <FontAwesomeIcon icon={faCog} className="text-muted me-3" />
-                <FontAwesomeIcon icon={faTrash} className="text-muted" /> */}
+                <FontAwesomeIcon icon={faCog} className="text-muted me-3" />
+                <FontAwesomeIcon icon={faTrash} className="text-muted" />
               </Col>
               <Col className="text-end">
                 {/* Displaying the count of filtered items */}
                 <span>Items in the table:</span>
-                <span className='text-info ms-2 me-5'>
-                  {
-                    modifiedTrips
-                    .filter(item=>!date?true:(date==item.start_date.split("T")[0] || date==item.end_date.split("T")[0]))
-                    .filter(item=>!vehicleSearch?true:item.vehicleNumber.search(vehicleSearch)==-1?false:true)
-                    .filter(item=>item.status == "upcoming")
-                    .length
-                  }
-                </span>
+                <span className='text-info ms-2 me-5'>{filteredTrips.length}</span>
               </Col>
             </Row>
 
@@ -207,56 +97,42 @@ export default function ScheduleTrip() {
                       <th>DRIVER</th>
                       <th>START DATE</th>
                       <th>END DATE</th>
-                      <th>Status</th>
+                      <th>DURATION</th>
                       <th></th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {
-                      modifiedTrips.length>0?
-                      modifiedTrips
-                      .filter(item=>!date?true:(date==item.start_date.split("T")[0] || date==item.end_date.split("T")[0]))
-                      .filter(item=>!vehicleSearch?true:item.vehicleNumber.search(vehicleSearch)==-1?false:true)
-                      .filter(item=>item.status == "upcoming")
-                      .map((item,index)=>(
-                      <tr key={index} className="bg-white">
-                        <td>
-                          {/* <Form.Check type="checkbox" /> */}
-                        </td>
-                        <td>{item.trip_id} <span className="text-primary ms-1">{item?.trip_type.toUpperCase()}</span></td>
+                    {filteredTrips.map(trip => (
+                      <tr key={trip.id} className="bg-white">
+                        <td><Form.Check type="checkbox" /></td>
+                        <td>{trip.id} <span className="text-primary ms-1">SCHEDULED</span></td>
                         <td>
                           <div className="d-flex align-items-center gap-2">
                             <FontAwesomeIcon icon={faBus} className="text-muted me-2" />
                             <div>
-                              <div>{item.vehicleNumber}</div>
+                              <div>{trip.vehicle}</div>
                               <small className="text-muted">BUS</small>
                             </div>
                           </div>
                         </td>
                         <td>
                           <FontAwesomeIcon icon={faUser} className="text-muted me-2" />
-                          {item.driverName}
+                          {trip.driver}
                         </td>
-                        <td>{new Date(item.start_date).toLocaleDateString()}<br /><small className="text-muted">{formatTime(item.start_time)}</small></td>
-                        <td>{new Date(item.end_date).toLocaleDateString()}<br /><small className="text-muted">{formatTime(item.end_time)}</small></td>
+                        <td>{new Date(trip.startDate).toLocaleDateString()}<br /><small className="text-muted">{new Date(trip.startDate).toLocaleTimeString()}</small></td>
+                        <td>{new Date(trip.endDate).toLocaleDateString()}<br /><small className="text-muted">{new Date(trip.endDate).toLocaleTimeString()}</small></td>
                         <td>
-                          {/* <FontAwesomeIcon icon={faClock} className="text-muted me-2" />
-                          {tripDuration(item.start_date,item.start_time,item.end_date,item.end_time)} */}
-                          <button className={item.status=="live"?"text-success btn":"text-secondary btn"} onClick={()=>handleLive(item._id)}>
-                            <FontAwesomeIcon icon={faCircleCheck} />
-                            <span className='ms-2'>{item.status=="live"?"Live":"Make Live"}</span>
-                          </button>
+                          <FontAwesomeIcon icon={faClock} className="text-muted me-2" />
+                          {trip.duration}
                         </td>
                         <td>
-                          {/* <Button variant="link" className="p-0">
+                          <Button variant="link" className="p-0">
                             <FontAwesomeIcon icon={faEllipsisV} />
-                          </Button> */}
+                          </Button>
                         </td>
                       </tr>
-                      ))
-                      :<></>
-                    }
+                    ))}
                   </tbody>
 
                 </Table>

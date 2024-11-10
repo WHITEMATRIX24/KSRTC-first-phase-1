@@ -5,7 +5,7 @@ import Driver from '../Models/DiverSchema.js';
 
 // <<<<<<::::::::Adding New Trip Details::::::::>>>
 export const addNewTrip = async (req, res) => {
-    const { start_date, end_date, start_time, end_time, departure_location, arrival_location, trip_id, trip_type } = req.body;
+    const { start_date, end_date, start_time, end_time, departure_location, arrival_location } = req.body;
     const { vehicle_id, driver_id, conductor_id } = req.params;
 
     try {
@@ -18,7 +18,7 @@ export const addNewTrip = async (req, res) => {
         }
 
         const newTrip = new Trip({
-            start_date, end_date, start_time, end_time, trip_id, trip_type,
+            start_date, end_date, start_time, end_time,
             departure_location: {
                 city: departure_location.city,
                 address: departure_location.address
@@ -85,50 +85,6 @@ export const editTripDetails = async (req, res) => {
             driver_id: driver_id,
             conductor_id: conductor_id,
             status: 'completed', collection_amount, fuelCost
-        }, { new: true });
-
-        if (updatedTrip) {
-            res.status(200).json(updatedTrip);
-        } else {
-            res.status(406).json("Trip Update Failed ::::::");
-        }
-    } catch (err) {
-        console.log("Error at catch in tripController/editTripDetails::::::", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
-
-
-
-
-// editing trip by tripid , driverid, vehicleid, contuctorid
-
-export const editTripDetailsNew = async (req, res) => {
-    const { start_date, end_date, start_time, end_time, departure_location, arrival_location, status } = req.body;
-    const { vehicle_id, driver_id, conductor_id, trip_id } = req.params;
-
-    try {
-        const vehicle = await Vehicle.findById(vehicle_id);
-        const driver = await Driver.findById(driver_id);
-        const conductor = await Conductor.findById(conductor_id);
-
-        if (!vehicle || !driver || !conductor) {
-            return res.status(404).json({ error: "One or more related entities not found" });
-        }
-
-        const updatedTrip = await Trip.findByIdAndUpdate(trip_id, {
-            start_date, end_date, start_time, end_time, status,
-            departure_location: {
-                city: departure_location.city,
-                address: departure_location.address
-            },
-            arrival_location: {
-                city: arrival_location.city,
-                address: arrival_location.address
-            },
-            vehicle_id: vehicle_id,
-            driver_id: driver_id,
-            conductor_id: conductor_id
         }, { new: true });
 
         if (updatedTrip) {
