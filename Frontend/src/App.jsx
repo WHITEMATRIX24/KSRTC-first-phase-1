@@ -11,6 +11,8 @@ import TripParameters from './Pages/TripParameters/TripParameters'
 import ScheduleTrip from './Pages/ScheduleTrip/ScheduleTrip'
 import Conductors from './Pages/conductors/Conductors'
 import AddConductor from './Pages/conductors/AddConductor'
+import AddVehicle from './Pages/AddVehicle/AddVehicle'
+import OnGoingTrips from './Pages/OnGoingTrip/OnGoingTrips'
 
 
 
@@ -23,6 +25,8 @@ function App() {
         <Route path='/' element={<Dashboard />}></Route>
         <Route path='/fleet' element={<Vehicles />}></Route>
         <Route path='/vehicle-details' element={<VehicleDetails />}></Route>
+        <Route path='/add-vehicle' element={< AddVehicle />}></Route>
+
         <Route path='/driver' element={<Drivers />}></Route>
         <Route path='/add-driver' element={<AddDriver />}></Route>
         <Route path='/conductor' element={< Conductors />}></Route>
@@ -30,6 +34,7 @@ function App() {
         <Route path='/trip-overview' element={<TripOverview />}></Route>
         <Route path='/add-trip' element={<TripParameters />}></Route>
         <Route path='/scheduled-trips' element={<ScheduleTrip />}></Route>
+        <Route path='/ongoing-trips' element={<OnGoingTrips />}></Route>
 
 
 

@@ -6,8 +6,10 @@ const vehicleSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    // add enum
     model: {
         type: String,
+        enum: ["Ashok Leyland", "Bharath Benzs"],
         required: true
     },
     status: {
@@ -21,13 +23,27 @@ const vehicleSchema = new mongoose.Schema({
         required: true
     },
     odometer: {
-        type: Number,
-        required: true
+        type: String,
+        default: null,
     },
     driver: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Drivers'
     },
+    // extra added condition and fuelconsumption
+    // condition:{
+    //     type: String,
+    //     enum: ["Good","Bad"],
+    //     required: true
+    // },
+    fuelconsumption: {
+        type: String,
+        default: null,
+
+    },
+
+
+
     maintenance_history: [
         {
             maintenance_date: {

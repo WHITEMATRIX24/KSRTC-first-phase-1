@@ -57,19 +57,21 @@ export const getAllTripDetails = async (req, res) => {
 
 // <<<<<:::::::::Editing Trip Details By trip_id:::::::::>>>>>>>> 
 export const editTripDetails = async (req, res) => {
-    const { start_date, end_date, start_time, end_time, departure_location, arrival_location } = req.body;
-    const { vehicle_id, driver_id, conductor_id, trip_id } = req.params;
+    console.log('inside')
+    const { start_date, end_date, start_time, end_time, departure_location, arrival_location, vehicle_id, conductor_id, driver_id, issues_reported, status, trip_id, trip_type, updated_at, collection_amount, fuelCost } = req.body;
+    console.log(status)
+
+    const { _id } = req.params;
 
     try {
-        const vehicle = await Vehicle.findById(vehicle_id);
-        const driver = await Driver.findById(driver_id);
-        const conductor = await Conductor.findById(conductor_id);
+        const vehicle = await Trip.findById(_id);
 
-        if (!vehicle || !driver || !conductor) {
+
+        if (!vehicle) {
             return res.status(404).json({ error: "One or more related entities not found" });
         }
 
-        const updatedTrip = await Trip.findByIdAndUpdate(trip_id, {
+        const updatedTrip = await Trip.findByIdAndUpdate(_id, {
             start_date, end_date, start_time, end_time,
             departure_location: {
                 city: departure_location.city,
@@ -81,7 +83,8 @@ export const editTripDetails = async (req, res) => {
             },
             vehicle_id: vehicle_id,
             driver_id: driver_id,
-            conductor_id: conductor_id
+            conductor_id: conductor_id,
+            status: 'completed', collection_amount, fuelCost
         }, { new: true });
 
         if (updatedTrip) {

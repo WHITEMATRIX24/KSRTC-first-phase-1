@@ -1,15 +1,20 @@
 import Vehicles from "../Models/VechicleSchema.js";
 
 // <<<<<<::::::::Adding New Vehicle Details::::::::>>>
+// <<<<<<::::::::Adding New Vehicle Details::::::::>>>
 export const addNewVehicle = async (req, res) => {
-    const { number, model, status, transport_type, odometer } = req.body;
+    // console.log("in controller");
+
+    const { transport_type, number, model, status, fuelconsumption, odometer } = req.body;
+    console.log(req.body);
+
     try {
         const existingVehicle = await Vehicles.findOne({ number });
         if (existingVehicle) {
             res.status(406).json("Vehicle is Already Existing:::::");
         } else {
             const newVehicle = new Vehicles({
-                number, model, status, transport_type, odometer
+                transport_type, number, model, status, fuelconsumption, odometer
             });
             await newVehicle.save();
             res.status(201).json(newVehicle);
@@ -17,8 +22,10 @@ export const addNewVehicle = async (req, res) => {
     } catch (err) {
         console.log("Error at catch in vehicleController/addNewVehicle::::::", err);
         res.status(500).json({ error: "Internal server error" });
+
     }
 };
+
 
 // <<<<<<<:::::::Getting All Vehicle Details From DB::::::::>>>>>>>>>
 export const getAllVehicles = async (req, res) => {
